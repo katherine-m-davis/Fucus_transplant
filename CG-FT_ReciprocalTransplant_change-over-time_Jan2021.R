@@ -6,8 +6,7 @@
 library(phyloseq)
 library(vegan)
 library(tidyverse)
-library(viridis)
-library(gridExtra)
+library(ggpubr)
 
 #### Read in dataset ####
 cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/CG_FT_rock_fucus_combined_phyloseq_r1500.RDS")
