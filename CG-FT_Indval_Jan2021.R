@@ -7,22 +7,6 @@ library(tidyverse)
 library(indicspecies)
 library(ggpubr)
 
-#### Plotting theme ####
-P1=5;P2=6;P3=7
-MyTheme <- theme_classic() + 
-  theme(plot.title = element_text(size=P3),
-        axis.text=element_text(size=P2),
-        axis.text.x =element_text(size=P2,angle=45,hjust=1),
-        axis.title=element_text(size=P2),
-        legend.text=element_text(size=P2),
-        legend.title=element_text(size=P2),
-        panel.border = element_blank(),
-        axis.ticks.length = unit(.5, "mm"),
-        plot.caption = element_text(hjust = 0), 
-        plot.title.position = "plot")
-
-
-
 #### Read in dataset ####
 cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/CG_FT_rock_fucus_combined_phyloseq_r1500_Jan2021.RDS")
 dimnames(tax_table(cg.ft.fr))
@@ -51,13 +35,13 @@ ft.indval.tax <- left_join(ft.indval, cg.ft.tax)
 #### Get relative abundance of top Indicator ASVs across samples ####
 ft.indval.9 <- ft.indval.tax %>% filter(indval.stat >= 0.9) # select ASVs with indval stat greater than 0.9
 length(unique(ft.indval.8$ASV))
-ft.f <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "FT" & sample_data(cg.ft.fr)$type == "fucus")
-ftdf <- psmelt(ft.f)
-saveRDS(ftdf, file="~/Desktop/Desktop2020/CG_FT/Data/Combined/FT_df_r1500_Jan2021.RDS")
-
+# Data frame of phyloseq object
+# ft.f <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "FT" & sample_data(cg.ft.fr)$type == "fucus")
+# ftdf <- psmelt(ft.f)
+# saveRDS(ftdf, file="~/Desktop/Desktop2020/CG_FT/Data/Combined/FT_df_r1500_Jan2021.RDS")
+ftdf <- readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/FT_df_r1500_Jan2021.RDS")
 
 #### Calculate prevalence and mean relative abundance ####
-colnames(ftdf)
 ftdf <- ftdf %>% group_by(treatment, OTU) %>%  mutate(n_samples_total=n()) %>% mutate(n_samples_present=n())
 ftdf <- ftdf %>% mutate(perc.samples = n_samples_present/n_samples_total * 100)
 ftdf <- ftdf %>% mutate(relabund = Abundance/1500 * 100)
@@ -80,7 +64,7 @@ length(unique(ftdf.ind$OTU2)) #76
 
 ftdf.ind.f$color <- ifelse(ftdf.ind.f$origin == "PB", "#E69F00", "darkblue")  #add column for color corresponding to indicator site
 # Create legend title with square root symbol
-ft.heatmap.legend <- "\u221A ASV \nrelative abundance"  
+ft.heatmap.legend <- "\u221A ASV \nrelative \nabundance"  
 
 
 #### Plot heatmap ####
@@ -125,24 +109,29 @@ ft.hm.col <- ggplot(ft.indval.9, aes(x=xlab, y=OTU3, fill= group)) +
 ft.hm.col 
 
 
-
-
+# Save heatmap color legend for adding manually
 ft.heatmap.colors <- get_legend(ft.hm.col)
 pdf(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_color_legend_2021.pdf", height =2, width =2)
 ft.hm.color.legend.plot <- as_ggplot(ft.heatmap.colors)
 ft.hm.color.legend.plot
 dev.off()
 
+# Save heatmap relative abundance legend for adding manually
+ft.heatmap.abund <- get_legend(ft.hm) 
+pdf(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_abundance_legend_2021.pdf", height =2, width =2)
+ft.hm.abund.legend.plot <- as_ggplot(ft.heatmap.abund)
+ft.hm.abund.legend.plot
+dev.off()
 # Combine plots
-ftheatmap <- ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,2))
+ftheatmap <- ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm + rremove("legend"), nrow =1,  align="h", widths = c(1,3.5))
+ftheatmap
 
 #### Save figure
-ggsave(ftheatmap,filename = "~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_Jan2021.pdf",device = "pdf",width = 180,height = 100,unit="mm")
-
-
-
 pdf(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_Jan2021.pdf", width = 12, height = 6)
-ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3))
+ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3.5))
 dev.off()
 
-par(mar = c(0, 0, 0, 0))
+ftheatmapplot <-ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3.5))
+ggsave(ftheatmap,filename = "~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/ggsave_CG-FT_FT_Indicator_Heatmap_Jan2021.pdf",device = "pdf",width = 180,height = 100,unit="mm")
+
+
