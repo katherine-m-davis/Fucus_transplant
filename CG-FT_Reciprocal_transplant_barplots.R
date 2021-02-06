@@ -261,7 +261,7 @@ FT.color.lookup$axis.x <- seq_along(1:length(FT.color.lookup$Genus3))
 FT.color.lookup$axis.y <- 1
 
 lp <- ggplot(FT.color.lookup, aes(x=axis.x, y=axis.y, fill= Genus3)) + 
-  theme_classic(base_size = 12)+
+  theme_classic(base_size = 11)+
   geom_bar(aes(), stat="identity", position="stack") +
   scale_fill_manual(values =FTcolors) +
   theme(legend.position = "bottom", legend.title = element_blank(), legend.text = element_text(size = 11)) +
@@ -272,7 +272,7 @@ leg <- get_legend(lp)
 
 # Convert to a ggplot and print
 gg.lp <- as_ggplot(leg) 
-gg.lp <- gg.lp + theme(plot.margin = unit(c(0, 1, 0, 4), "cm"))
+gg.lp <- gg.lp + theme(plot.margin = unit(c(0, 6, 0, 6), "cm"))
 ####################################################################################################################
 #### Combine plots with Figure A & B labels for Supplementary Figure ----------------------------------------------#
 library(ggpubr)
@@ -284,7 +284,12 @@ rp <- r + theme(legend.position = "none")
 pdf("~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/FT_barplot_combined_fucus-rock_ordered_6Feb2021.pdf", 
     width = 14, # define plot width and height,
     height = 12)
-grid.arrange(fp, rp, gg.lp, nrow = 3, heights=c(1,1,0.5))
+cowplot::plot_grid(fp, rp, gg.lp, nrow = 3, labels = c('A', 'B', ''))
 dev.off()
+
+library(cowplot)
+
+grid.arrange(grobs=list(fp, rp, gg.lp), labels = c("A","B",NA), nrow = 3, heights=c(1,1,0.5))
+
 
 
