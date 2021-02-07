@@ -275,7 +275,7 @@ gg.lp <- as_ggplot(leg)
 gg.lp <- gg.lp + theme(plot.margin = unit(c(0, 6, 0, 6), "cm"))
 ####################################################################################################################
 #### Combine plots with Figure A & B labels for Supplementary Figure ----------------------------------------------#
-library(ggpubr)
+library(cowplot)
 
 fp <- f + theme(legend.position = "none")
 rp <- r + theme(legend.position = "none")
@@ -287,9 +287,8 @@ pdf("~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/FT_barplot_combined_fu
 cowplot::plot_grid(fp, rp, gg.lp, nrow = 3, labels = c('A', 'B', ''))
 dev.off()
 
-library(cowplot)
 
-grid.arrange(grobs=list(fp, rp, gg.lp), labels = c("A","B",NA), nrow = 3, heights=c(1,1,0.5))
+#grid.arrange(grobs=list(fp, rp, gg.lp), labels = c("A","B",NA), nrow = 3, heights=c(1,1,0.5))
 
 
 
