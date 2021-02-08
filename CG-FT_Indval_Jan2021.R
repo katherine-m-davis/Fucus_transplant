@@ -34,7 +34,7 @@ ft.indval.tax <- left_join(ft.indval, cg.ft.tax)
 
 #### Get relative abundance of top Indicator ASVs across samples ####
 ft.indval.9 <- ft.indval.tax %>% filter(indval.stat >= 0.9) # select ASVs with indval stat greater than 0.9
-length(unique(ft.indval.8$ASV))
+length(unique(ft.indval.9$ASV)) #47
 # Data frame of phyloseq object
 # ft.f <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "FT" & sample_data(cg.ft.fr)$type == "fucus")
 # ftdf <- psmelt(ft.f)
@@ -118,18 +118,24 @@ dev.off()
 
 # Save heatmap relative abundance legend for adding manually
 ft.heatmap.abund <- get_legend(ft.hm) 
-pdf(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_abundance_legend_2021.pdf", height =2, width =2)
+
+png(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_abundance_legend_2021.png", height =2, width =2)
 ft.hm.abund.legend.plot <- as_ggplot(ft.heatmap.abund)
 ft.hm.abund.legend.plot
 dev.off()
+
+ft.hm.abund.legend.plot
+
 # Combine plots
-ftheatmap <- ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm + rremove("legend"), nrow =1,  align="h", widths = c(1,3.5))
+ftheatmap <- ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3.5))
 ftheatmap
 
 #### Save figure
-pdf(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_Jan2021.pdf", width = 12, height = 6)
+png(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/CG-FT_FT_Indicator_Heatmap_Feb2021.png", width = 180, height = 100, 
+      units = "mm", res = 400)
 ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3.5))
 dev.off()
+
 
 ftheatmapplot <-ggarrange(ft.hm.col + rremove("legend") + rremove("xlab") + rremove("x.text"), ft.hm, nrow =1,  align="h", widths = c(1,3.5))
 ggsave(ftheatmap,filename = "~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Figures/ggsave_CG-FT_FT_Indicator_Heatmap_Jan2021.pdf",device = "pdf",width = 180,height = 100,unit="mm")
