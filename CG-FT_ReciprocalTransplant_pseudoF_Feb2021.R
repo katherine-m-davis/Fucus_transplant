@@ -359,6 +359,7 @@ ggplot(pbw.pseudo_f.df, aes(x = sample.number, y = pseudo_F)) + geom_point() + t
 all.pseudo_F.df <- rbind(wbw.pseudo_f.df, wbp.pseudo_f.df, pbw.pseudo_f.df, pb.pseudo_f.df)
 
 # Plot pseudo-F values over time
+pdf(file="~/Desktop/CG-FT_revised_figures/CG-FT_pseudo_F_SI.pdf", width = 6, height = 3)
 ggplot(all.pseudo_F.df, aes(x =sample.number, y = pseudo_F)) + 
   theme_classic(base_size = 11) +
   geom_point(aes(colour = factor(compared.to)), size =2) + 
@@ -367,6 +368,7 @@ ggplot(all.pseudo_F.df, aes(x =sample.number, y = pseudo_F)) +
   xlab("Sample day") +
   ylab("pseudo-F value") +
   labs(color="Compared to controls at") 
+dev.off()
 
 # Check for significant change in pseudo-F value over time
 all.pseudo_F.df %>% group_by(compared.to, transplant) %>% 
