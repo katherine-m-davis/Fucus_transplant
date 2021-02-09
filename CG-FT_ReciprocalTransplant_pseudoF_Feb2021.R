@@ -370,8 +370,15 @@ ggplot(all.pseudo_F.df, aes(x =sample.number, y = pseudo_F)) +
   labs(color="Compared to controls at") 
 dev.off()
 
+ft.trmt.colors <- c("#E69F00","#463806", "#7ACE54", "darkblue")
+
 # Check for significant change in pseudo-F value over time
+# save/read pseudo-F results
+
 all.pseudo_F.df %>% group_by(compared.to, transplant) %>% 
   group_modify(~ broom::tidy(aov(pseudo_F ~ sample.number, data = .x)))
-##################################################################
 
+
+all.pseudo_F.df %>% group_by(compared.to, transplant) %>% 
+  group_modify(~ broom::tidy(lm(pseudo_F ~ sample.number, data = .x)))
+##################################################################

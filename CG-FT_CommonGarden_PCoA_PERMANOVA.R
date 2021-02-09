@@ -8,7 +8,7 @@ library(viridis)
 library(gridExtra)
 
 #### Read combined dataset ####
-cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/CG_FT_rock_fucus_combined_phyloseq_r1500.RDS")
+cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/CG_FT_rock_fucus_combined_phyloseq_r1500_Jan2021.RDS")
 
 # Only Fucus
 cg.ft.f <-subset_samples(cg.ft.fr, ! sample_data(cg.ft.fr)$type %in% c("rock","seawater"))
@@ -45,7 +45,7 @@ dev.off()
 #### Are samples in Common Garden at day 1 differentiated by site of origin ####
 # Only controls from transplant experiment
 cg.f <-subset_samples(cg.ft.f, sample_data(cg.ft.fr)$study =="CG")
-cg.f.1 <- subset_samples(cg.f, sample_data(cg.f)$sample.number %in% c(0,1))
+cg.f.1 <- subset_samples(cg.f, sample_data(cg.f)$sample.number ==1)
 
 cg.f.distmeta.1 <- as.data.frame(unclass(sample_data(cg.f.1)))
 cg.f.distmeta.1 %>% group_by(origin, sample.number) %>% summarise(n())
@@ -63,9 +63,9 @@ permanova.cg1.site <- adonis(cg.f.distmat.1 ~ origin , data = cg.f.distmeta.1)
 permanova.cg1.site
 #----------------------------------------------------------------# 
 #           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
-# origin     4    5.5339 1.38348  8.6352 0.48281  0.001 ***
-# Residuals 37    5.9279 0.16021         0.51719           
-# Total     41   11.4618                 1.00000         
+# origin     4    4.4039 1.10098  6.9576 0.50757  0.001 ***
+# Residuals 27    4.2725 0.15824         0.49243           
+# Total     31    8.6764                 1.00000       
 #----------------------------------------------------------------# 
 ##################################################################
 
