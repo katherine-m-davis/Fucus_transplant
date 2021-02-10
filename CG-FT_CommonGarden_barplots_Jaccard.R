@@ -12,7 +12,7 @@ cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/CG_FT_combined_phylose
 cg.ft.tax <- as.data.frame(unclass(tax_table(cg.ft.fr)))
 
 # Subset to common garden and fucus samples and create dataframe
-#cg.ps <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "CG")
+cg.ps <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "CG")
 #cg.df <- psmelt(cg.ps) # create dataframe 
 #cg.df <- cg.df %>% mutate_if(is.factor, as.character)
 #write.csv(cg.df, file="~/Desktop/Desktop2020/CG_FT/Data/CG-FT_CG_dataframe_r1500_Jan2021.RDS")
@@ -64,9 +64,9 @@ c26.ordered <- c("snow4",
 scales::show_col(c26.ordered)
 
 # Update Family/Genus names 
-cg.f$Genus2 <- ifelse(cg.f$Genus %in% genera.4, cg.f$Genus, "A_Other")
+cg.f$Genus2 <- ifelse(cg.f$Genus %in% genera.4, cg.f$Genus, "Other")
 unique(cg.f$Genus2)
-cg.f$Genus3 <- ifelse(cg.f$Genus2 %in% genera.4, paste(cg.f$Family, cg.f$Genus2, sep="_"), "A_Other")
+cg.f$Genus3 <- ifelse(cg.f$Genus2 %in% genera.4, paste(cg.f$Family, cg.f$Genus2, sep="_"), "Other")
 sort(unique(cg.f$Genus3))
 
 
@@ -90,8 +90,18 @@ cg.f2$id3 <- paste(cg.f2$sample.number, cg.f2$id2, sep="-")
 cg.f2$origin <- factor(cg.f2$origin, levels=c("PB", "NB", "WB west wall", "WB high", "WB low"))
 cg.f.1.5 <- cg.f2 %>% filter(sample.number %in% c(1,2,5))
 
+
+#### Arrange taxonomic assignments in alphabetical order with "Other" at the beginning ####
+paste0(sort(unique(cg.f.1.5$Genus3)), collapse="','") 
+cg.f.1.5$Genus3 <- factor(cg.f.1.5$Genus3, levels=c('Other','Bacteroidia_Unknown','Flavobacteriaceae_Algitalea','Flavobacteriaceae_Croceitalea','Flavobacteriaceae_Dokdonia','Flavobacteriaceae_Maribacter','Flavobacteriaceae_Psychroserpens','Flavobacteriaceae_Unknown','Hyphomonadaceae_Litorimonas','Pirellulaceae_Blastopirellula',
+                                                    'Pseudoalteromonadaceae_Pseudoalteromonas','Rhodobacteraceae_Octadecabacter','Rhodobacteraceae_Sulfitobacter','Rhodobacteraceae_Unknown','Rubritaleaceae_Luteolibacter','Rubritaleaceae_Rubritalea','Saprospiraceae_Lewinella','Saprospiraceae_Membranicola','Saprospiraceae_Unknown',
+                                                    'Shewanellaceae_Shewanella','Syntrophomonadaceae_Syntrophomonas','Thiohalorhabdaceae_Granulosicoccus'))
+
+sort(unique(cg.f.1.5$Genus3))
+
+
 # Plot and save
-pdf("~/Desktop/Desktop2020/CG_FT/Common_Garden/Figures/CG_barplot_Family_Genus_1-5_ordered_25Jan2021.pdf", 
+pdf("~/Desktop/Desktop2020/CG_FT/Common_Garden/Figures/CG_barplot_Family_Genus_1-5_ordered_8Feb2021.pdf", 
     width = 13, # define plot width and height
     height = 6)
 c <- ggplot(data=cg.f.1.5, aes(x=id3, y=relabund, fill=Genus3)) + 
@@ -203,7 +213,7 @@ dev.off()
 
 # Add statistics annoation to plot
 wbp2 <- wbp + geom_text(x = 1.5, y = 0.95, aes(label = sig), data = sig.df, size = 9)
-
+wbp2
 
 #### Combine Stacked Barplot and Jaccard Within-Between comparisons ###
 library(gridExtra)
@@ -213,8 +223,13 @@ grid.arrange(c, wbp2, heights = c(3,1))
 library(ggpubr)
 
 # Save with figure labels
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_CG_Figure3_Barplots_Jaccard_Jan2021.pdf",
+pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_CG_Figure3_Barplots_Jaccard_Feb2021.pdf",
     width =12, height = 9)
 ggarrange(c, wbp2, ncol = 1, labels = c("A","B"), heights=c(1.75,1))
 dev.off()
 
+
+# png(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_CG_Figure3_Barplots_Jaccard_Feb2021.png",
+#     width =180, height = 120, units  = "mm", res=350)
+# ggarrange(c, wbp2, ncol = 1, labels = c("A","B"), heights=c(1.75,1))
+# dev.off()
