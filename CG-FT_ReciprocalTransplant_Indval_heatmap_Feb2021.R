@@ -30,6 +30,11 @@ ft.indval <- read.csv(file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Data/FT
 # Add taxonomy data
 cg.ft.tax <- as.data.frame(unclass(tax_table(cg.ft.fr)))
 ft.indval.tax <- left_join(ft.indval, cg.ft.tax)
+ft.indval.tax$Sequence <- toupper(ft.indval.tax$Sequence)
+
+#### Save IndVal results table with taxonomy ####
+write.csv(ft.indval.tax, file="~/Desktop/Desktop2020/CG_FT/Fucus_Transplant/Data/FT_control_INDVAL_results_with_taxonomy_Feb2021.csv")
+
 
 
 #### Get relative abundance of top Indicator ASVs across samples ####
