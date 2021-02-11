@@ -1,5 +1,7 @@
 #### F. distichus common garden indicator taxa analysis ###
 # Get indicator ASVs between sites and over time in common environment
+
+############################################################################################################################################
 #### Libraries ####
 library(phyloseq)
 library(vegan)
@@ -7,10 +9,17 @@ library(tidyverse)
 library(indicspecies)
 library(ggpubr)
 
+############################################################################################################################################
+
+
+############################################################################################################################################
 #### Read in dataset ####
 cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/Combined/CG_FT_rock_fucus_combined_phyloseq_r1500_Jan2021.RDS")
 dimnames(tax_table(cg.ft.fr))
 
+############################################################################################################################################
+
+############################################################################################################################################
 #### Compare all communities at time 1 to all communities at time 5 ####
 # Get otu table and meta data for sample comparisions 
 cgf.1.5 <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "CG" & sample_data(cg.ft.fr)$type == "fucus" & sample_data(cg.ft.fr)$sample.number %in% c(1,5)) #subset phyloseq object
