@@ -29,7 +29,7 @@ cg.palette <- c("#999999", "#E69F00", "#56B4E9", "darkblue", "cyan4")
 day.shape <- c(16, 8)
 
 # Plot and save
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_site-morphotype_PCoA_Jan21.pdf",
+pdf(file="~/Desktop/Manuscripts_2021/CG_FT_2021/CG-FT_Figures_Resubmission_2021/CG_FT_Figure2_CG_PCoA_Feb2021.pdf",
     width = 5.5, height = 3.5)
 sm <- plot_ordination(cg.ft.f15, cg.ft.f.pcoa15, type = "samples", color="origin_morph", shape= "sample.number") +
   theme_classic(base_size = 12) + 

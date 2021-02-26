@@ -129,27 +129,22 @@ dev.off()
 
 #### Distance matrix ####
 cg.f.ps <- subset_samples(cg.ps, sample_data(cg.ps)$type == 'fucus')
+cg.f.ps <- subset_samples(cg.f.ps, sample_data(cg.f.ps)$sample.number %in% c(1,5))
 cg.f.dist <- phyloseq::distance(cg.f.ps, method='jaccard', type='samples') #make distance object
 cg.f.distmat <- as.matrix(cg.f.dist) #convert to matrix
-sample.order <- rownames(cg.f.distmat) #save sampleid order from rownames of distance matrix
-
 
 #### Jaccard dissimilarity ####
 # 0 means both samples share exact the same species
 # 1 means both samples have no species in common
 
-cg.f.distmeta <- cg.f %>% filter(sampleid %in% sample.order)
+cg.f.distmeta <- as.data.frame(unclass(sample_data(cg.f.ps)))
 colnames(cg.f.distmeta)
 cg.f.distmeta2 <- cg.f.distmeta %>% select(sampleid, type, date, origin, sample.number, individual)
-cg.f.distmeta2 <- distinct(cg.f.distmeta2)
-m <- as.character(cg.f.distmeta2$sampleid)
 
-# reorder distance matrix to match meta data
-cg.f.distmat <- cg.f.distmat[m,m]
+#### Create dataframe of pairwise comparisons ####
 pairwise.cg <-subset(reshape2::melt(cg.f.distmat, na.rm = TRUE))
 colnames(pairwise.cg) <- c('s.1','s.2','jacc')
-pairwise.cg <- pairwise.cg %>% filter(! s.1 == s.2)
-
+pairwise.cg <- pairwise.cg %>% filter(! s.1 == s.2) # remove pairwise comparisons of the same sample
 
 colnames(cg.f.distmeta2)
 names(cg.f.distmeta2)[names(cg.f.distmeta2) == 'sampleid'] <- 's'
@@ -161,51 +156,36 @@ colnames(cg.2) <- paste(colnames(cg.2), "2", sep = ".")
 pairwise.cg.m <- left_join(pairwise.cg, cg.1)
 pairwise.cg.m <- left_join(pairwise.cg.m, cg.2)
 
-#### Find and remove reciprocal samples ####
-cols <- c("s.1","s.2")
-newdf <-  pairwise.cg.m[,cols]
-for (i in 1:nrow(pairwise.cg.m)){
-  newdf[i, ] = sort(pairwise.cg.m[i,cols])
-}
-pairwise.cg.m.filt <- pairwise.cg.m[!duplicated(newdf),]
-
-pairwise.cg.m.filt <- pairwise.cg.m.filt %>% filter(! sample.number.1 == 2) %>% filter(! sample.number.2 == 2)
-pairwise.cg.m.filt2 <- pairwise.cg.m.filt %>% filter(sample.number.1 %in% c(1,5)) %>% filter(sample.number.2 %in% c(1,5))
+pairwise.cg.m.filt2 <- pairwise.cg.m
 pairwise.cg.m.filt2$comp <- paste(pairwise.cg.m.filt2$sample.number.1, pairwise.cg.m.filt2$sample.number.2, sep="-")
-pairwise.cg.m.filt2$wb <- ifelse(pairwise.cg.m.filt2$origin.1 == pairwise.cg.m.filt2$origin.2, "within site", "between sites")
+pairwise.cg.m.filt2$within_btwn <- ifelse(pairwise.cg.m.filt2$origin.1 == pairwise.cg.m.filt2$origin.2, "within site", "between sites")
 pairwise.cg.m.filt2$origin.1 <- factor(pairwise.cg.m.filt2$origin.1, levels=c("PB", "NB", "WB west wall", "WB high", "WB low"))
-
 
 pairwise.select <- pairwise.cg.m.filt2 %>% filter(comp %in% c("1-1","5-5"))
 pairwise.select$comp2 <- ifelse(pairwise.select$comp == "1-1", "1", "5")
-pairwise.select$wb2 <- factor(pairwise.select$wb, levels=c("within site","between sites"))
-
+pairwise.select$within_btwn2 <- factor(pairwise.select$within_btwn, levels=c("within site","between sites"))
 pairwise.select$origin.1 <- factor(pairwise.select$origin.1, levels=c("PB", "NB", "WB west wall", "WB high", "WB low"))
 
-
 #### Calculate paired t-test for each combo ####
-pwt <- pairwise.select %>% group_by(origin.1, wb) %>% 
-  pairwise_t_test(jacc ~ comp, p.adjust.method = "bonferroni")
-
+pwt <- pairwise.select %>% ungroup() %>% group_by(within_btwn2, origin.1) %>% pairwise_t_test(jacc ~ comp2)
 
 # Creat dataframe of paired T-test significance values to annotate plot
 paste(shQuote(unique(pairwise.select$origin.1)), collapse=", ")
 cg.origin <- c('PB', 'NB', 'WB west wall', 'WB high', 'WB low', 'PB', 'NB', 'WB west wall', 'WB high', 'WB low')
 strrep(c("'within site', ","'between sites', "), 5)
 cg.compare <- c('within site', 'within site', 'within site', 'within site', 'within site', 'between sites', 'between sites', 'between sites', 'between sites', 'between sites')
-sig <- c(NA,NA,NA,NA,"*",NA,NA,NA,NA,NA )
+sig <- c(NA,NA,"*",NA,"*","*",NA,NA,NA,NA )
 sig.df <- data.frame(cg.compare, cg.origin, sig)
-colnames(sig.df) <- c("wb2", "origin.1", "sig")
-
+colnames(sig.df) <- c("within_btwn2", "origin.1", "sig")
 
 #### Plot Jaccard within and between sites ####
-pdf("~/Desktop/Desktop2020/CG_FT/Common_Garden/Figures/CG_within_between_Jaccard_Jan2021.pdf", 
+pdf("~/Desktop/Desktop2020/CG_FT/Common_Garden/Figures/CG_within_between_Jaccard_Feb2021.pdf", 
     width = 13, # define plot width and height
     height = 4)
 wbp <- ggplot(pairwise.select, aes(x=comp2, y = jacc)) +
   geom_jitter(width=0.2) + 
   geom_boxplot(fill='#A4A4A4', alpha= 0.2, color="black") +
-  facet_grid(~wb2+origin.1) +
+  facet_grid(~within_btwn2+origin.1) +
   theme_classic()+
   theme(panel.spacing.x=unit(0, "lines")) +
   xlab("Sample day") +
@@ -213,28 +193,19 @@ wbp <- ggplot(pairwise.select, aes(x=comp2, y = jacc)) +
   theme(strip.text.x = element_text(size = 12)) +
   theme(axis.text=element_text(size =12), axis.title=element_text(size=12)) +
   theme(panel.border = element_rect(color = "black", fill = NA, size = 1)) 
-wbp + geom_text(x = 1.5, y = 0.95, aes(label = sig), data = sig.df, size = 9)
+wbp + geom_text(x = 1.5, y = 0.965, aes(label = sig), data = sig.df, size = 9)
 dev.off()
 
 # Add statistics annoation to plot
-wbp2 <- wbp + geom_text(x = 1.5, y = 0.95, aes(label = sig), data = sig.df, size = 9)
+wbp2 <- wbp + geom_text(x = 1.5, y = 0.965, aes(label = sig), data = sig.df, size = 9)
 wbp2
 
 #### Combine Stacked Barplot and Jaccard Within-Between comparisons ###
-library(gridExtra)
-
-# Combine plots
-grid.arrange(c, wbp2, heights = c(3,1))
 library(ggpubr)
 
 # Save with figure labels
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_CG_Figure3_Barplots_Jaccard_Feb2021.pdf",
+pdf(file="~/Desktop/Manuscripts_2021/CG_FT_2021/CG-FT_Figures_Resubmission_2021/CG-FT_Figure3_CG_Barplots_Jaccard_Feb2021.pdf",
     width =12, height = 9)
 ggarrange(c, wbp2, ncol = 1, labels = c("A","B"), heights=c(1.75,1))
 dev.off()
 
-
-# png(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_CG_Figure3_Barplots_Jaccard_Feb2021.png",
-#     width =180, height = 120, units  = "mm", res=350)
-# ggarrange(c, wbp2, ncol = 1, labels = c("A","B"), heights=c(1.75,1))
-# dev.off()
