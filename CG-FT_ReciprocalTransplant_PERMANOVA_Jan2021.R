@@ -13,6 +13,11 @@ library(gridExtra)
 #### Read in dataset ####
 cg.ft.fr <-readRDS(file="~/Desktop/Desktop2020/CG_FT/Data/CG_FT_combined_phyloseq_r1500_Jan2021.RDS")
 
+#### Subset ####
+ft.ps <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$study == "FT")
+ft.ps.meta <- as.data.frame(unclass(sample_data(ft.ps)))
+ft.ps.meta %>% group_by(type) %>% summarise(n())
+
 ##### WB low -> PB compared to WB low ->WB low AND PB -> PB controls ####
 ft.wp <- subset_samples(cg.ft.fr, sample_data(cg.ft.fr)$treatment %in% c('WB low->PB', 'WB low->WB low', 'PB->PB'))
 ft.wp.meta <- as.data.frame(unclass(sample_data(ft.wp)))

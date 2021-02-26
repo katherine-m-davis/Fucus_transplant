@@ -129,7 +129,7 @@ dev.off()
 
 #### Distance matrix ####
 cg.f.ps <- subset_samples(cg.ps, sample_data(cg.ps)$type == 'fucus')
-cg.f.dist <- distance(cg.f.ps, method='jaccard', type='samples') #make distance object
+cg.f.dist <- phyloseq::distance(cg.f.ps, method='jaccard', type='samples') #make distance object
 cg.f.distmat <- as.matrix(cg.f.dist) #convert to matrix
 sample.order <- rownames(cg.f.distmat) #save sampleid order from rownames of distance matrix
 
@@ -170,18 +170,23 @@ for (i in 1:nrow(pairwise.cg.m)){
 pairwise.cg.m.filt <- pairwise.cg.m[!duplicated(newdf),]
 
 pairwise.cg.m.filt <- pairwise.cg.m.filt %>% filter(! sample.number.1 == 2) %>% filter(! sample.number.2 == 2)
-pairwise.cg.m.filt$comp <- paste(pairwise.cg.m.filt$sample.number.1, pairwise.cg.m.filt$sample.number.2, sep="-")
-pairwise.cg.m.filt$wb <- ifelse(pairwise.cg.m.filt$origin.1 == pairwise.cg.m.filt$origin.2, "within site", "between sites")
-pairwise.select <- pairwise.cg.m.filt %>% filter(comp %in% c("1-1","5-5"))
+pairwise.cg.m.filt2 <- pairwise.cg.m.filt %>% filter(sample.number.1 %in% c(1,5)) %>% filter(sample.number.2 %in% c(1,5))
+pairwise.cg.m.filt2$comp <- paste(pairwise.cg.m.filt2$sample.number.1, pairwise.cg.m.filt2$sample.number.2, sep="-")
+pairwise.cg.m.filt2$wb <- ifelse(pairwise.cg.m.filt2$origin.1 == pairwise.cg.m.filt2$origin.2, "within site", "between sites")
+pairwise.cg.m.filt2$origin.1 <- factor(pairwise.cg.m.filt2$origin.1, levels=c("PB", "NB", "WB west wall", "WB high", "WB low"))
+
+
+pairwise.select <- pairwise.cg.m.filt2 %>% filter(comp %in% c("1-1","5-5"))
 pairwise.select$comp2 <- ifelse(pairwise.select$comp == "1-1", "1", "5")
 pairwise.select$wb2 <- factor(pairwise.select$wb, levels=c("within site","between sites"))
+
 pairwise.select$origin.1 <- factor(pairwise.select$origin.1, levels=c("PB", "NB", "WB west wall", "WB high", "WB low"))
 
 
 #### Calculate paired t-test for each combo ####
 pwt <- pairwise.select %>% group_by(origin.1, wb) %>% 
-  pairwise_t_test(jacc ~ comp2, p.adjust.method = "bonferroni")
-view(pwt)
+  pairwise_t_test(jacc ~ comp, p.adjust.method = "bonferroni")
+
 
 # Creat dataframe of paired T-test significance values to annotate plot
 paste(shQuote(unique(pairwise.select$origin.1)), collapse=", ")
