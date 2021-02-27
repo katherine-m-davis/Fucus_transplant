@@ -31,7 +31,7 @@ pcoa.ft.c <- ordinate(ft.c, method = "PCoA", distance = "bray")
 ft.palette <- c("#E69F00", "darkblue")
 
 #### Plot and save Figure 4A ####
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_ft_controls_PCoA_Jan21.pdf",
+pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Figures_FINAL_Feb2021/CG-FT_ft_controls_PCoA_Jan21.pdf",
     width = 5, height = 3.5)
 ftc <- plot_ordination(ft.c, pcoa.ft.c, type = "samples", color="origin", shape ="type") +
   theme_classic(base_size = 12) + 
@@ -64,7 +64,7 @@ ft.day.shapes <- c(16,1,2,6,5,8)
 ft.trmt.colors <- c("#E69F00","#463806", "#7ACE54", "darkblue")
 
 #### Plot and save Figure 4B ####
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_ft_treatment_day_shapes_PCoA_Jan21.pdf",
+pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Figures_FINAL_Feb2021/CG-FT_ft_treatment_day_shapes_PCoA_Jan21.pdf",
     width = 5, height = 3.5)
 p2 <- plot_ordination(ft.f, pcoa.ft.f, type = "samples", color="treatment", shape ="sample.number") +
   theme_classic(base_size = 12) +
@@ -92,7 +92,7 @@ ft.day.shapes <- c(16,1,2,6,5,8)
 ft.trmt.colors <- c("#E69F00","#463806", "#7ACE54", "darkblue")
 
 #### Plot and save Figure 4B ####
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_ft_treatment_day_shapes_PCoA_Jan21.pdf",
+pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Figures_FINAL_Feb2021/CG-FT_ft_treatment_day_shapes_PCoA_Jan21.pdf",
     width = 5, height = 3.5)
 p3 <- plot_ordination(ft.r, pcoa.ft.r, type = "samples", color="treatment", shape ="sample.number") +
   theme_classic(base_size = 12) +
@@ -127,7 +127,7 @@ p3l <- p3 + theme(legend.position = "none")
 
 
 # Save combined Figure 4 with labels
-pdf(file="~/Desktop/Desktop2020/Manuscripts/CG_FT_Manuscript_2020/CG_FT_Manuscript_Figures/CG-FT_FT_Figure4_PCoA_Feb2021.pdf",
+pdf(file="~/Desktop/Manuscripts_2021/CG_FT_2021/CG-FT_Figures_Resubmission_2021/CG-FT_Figure4_FT_PCoA_Feb2021.pdf",
     width =7, height = 11)
 ggarrange(ggarrange(ftcl, NULL, p2l, NULL, p3l, ncol = 1, labels = c("A","","B", "", "C"), heights=c(1,0.05,1,0.05,1)),
   ggarrange(gg.A, NULL, gg.B, NULL, NULL, ncol = 1, heights=c(1,0.25,1,0.05,0.7)), ncol = 2, widths=c(1, 0.5))

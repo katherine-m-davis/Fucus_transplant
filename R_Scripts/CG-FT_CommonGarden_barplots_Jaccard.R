@@ -169,6 +169,12 @@ pairwise.select$origin.1 <- factor(pairwise.select$origin.1, levels=c("PB", "NB"
 #### Calculate paired t-test for each combo ####
 pwt <- pairwise.select %>% ungroup() %>% group_by(within_btwn2, origin.1) %>% pairwise_t_test(jacc ~ comp2)
 
+#### Save pairwise-t-test results ####
+pwt <- pwt %>% select(-c(p:p.signif))
+colnames(pwt) <- c("origin","comparison","beta_metric","group1","group2", "n1","n2", "p.adjust", "p.adjust.signif")
+write.csv(pwt, file="~/Desktop/Manuscripts_2021/CG_FT_2021/CG-FT_Supplementary_Info_2021/CG_Jaccard_comparison_TableS1_Feb2021.csv")
+
+
 # Creat dataframe of paired T-test significance values to annotate plot
 paste(shQuote(unique(pairwise.select$origin.1)), collapse=", ")
 cg.origin <- c('PB', 'NB', 'WB west wall', 'WB high', 'WB low', 'PB', 'NB', 'WB west wall', 'WB high', 'WB low')

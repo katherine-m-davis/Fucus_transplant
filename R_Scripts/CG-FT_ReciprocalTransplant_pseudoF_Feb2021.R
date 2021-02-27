@@ -359,7 +359,7 @@ ggplot(pbw.pseudo_f.df, aes(x = sample.number, y = pseudo_F)) + geom_point() + t
 all.pseudo_F.df <- rbind(wbw.pseudo_f.df, wbp.pseudo_f.df, pbw.pseudo_f.df, pb.pseudo_f.df)
 
 # Plot pseudo-F values over time
-pdf(file="~/Desktop/CG-FT_revised_figures/CG-FT_pseudo_F_SI.pdf", width = 6, height = 3)
+pdf(file="~/Desktop/Manuscripts_2021/CG_FT_2021/CG-FT_Figures_Resubmission_2021/CG-FT_pseudo_F_SI.pdf", width = 6, height = 3)
 ggplot(all.pseudo_F.df, aes(x =sample.number, y = pseudo_F)) + 
   theme_classic(base_size = 11) +
   geom_point(aes(colour = factor(compared.to)), size =2) + 
